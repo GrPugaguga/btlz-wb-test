@@ -29,9 +29,12 @@
     "author": "lucard17",
     "license": "ISC",
     "dependencies": {
+        "@fastify/swagger": "^9.6.0",
+        "@fastify/swagger-ui": "^5.2.3",
         "axios": "^1.13.2",
         "commander": "^13.1.0",
         "dotenv": "^16.3.1",
+        "fastify": "^5.6.2",
         "googleapis": "^144.0.0",
         "knex": "^3.0.1",
         "log4js": "^6.9.1",
