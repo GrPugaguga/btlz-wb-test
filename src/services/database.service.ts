@@ -2,11 +2,39 @@ import knex from '#postgres/knex.js';
 import { WbTariffsData, WbWarehouseTariff } from '#common/types/wb.types.js';
 import { formatDateToYYYYMMDD } from '#utils/date.format.js';
 
+const toNumeric = (value: string | number) => {
+    if (value === '-') {
+        return null;
+    }
+    if (typeof value === 'string') {
+        return value.replace(',', '.');
+    }
+    return value;
+};
 
 class DatabaseService {
     public async getSpreadsheetIds(): Promise<string[]> {
         const result = await knex('spreadsheets').select('spreadsheet_id');
         return result.map((row: { spreadsheet_id: string }) => row.spreadsheet_id);
+    }
+
+    public async addSpreadsheetId(id: string): Promise<void> {
+        await knex('spreadsheets')
+            .insert({ spreadsheet_id: id })
+            .onConflict('spreadsheet_id')
+            .ignore();
+        console.log(`Spreadsheet ID ${id} added (if not already present).`);
+    }
+
+    public async removeSpreadsheetId(id: string): Promise<void> {
+        const deletedCount = await knex('spreadsheets')
+            .where({ spreadsheet_id: id })
+            .del();
+        if (deletedCount > 0) {
+            console.log(`Spreadsheet ID ${id} removed.`);
+        } else {
+            console.log(`Spreadsheet ID ${id} not found.`);
+        }
     }
 
     public async upsertDailyTariff(data: WbTariffsData): Promise<void> {
@@ -32,27 +60,27 @@ class DatabaseService {
                     .where({ daily_tariff_id: dailyTariffId })
                     .del();
             } else {
-                const [newDailyTariffId] = await trx('daily_tariffs').insert({
+                const result = await trx('daily_tariffs').insert({
                     date: tariffDate,
                     dt_next_box: data.dtNextBox,
                     dt_till_max: data.dtTillMax,
-                });
-                dailyTariffId = newDailyTariffId;
+                }).returning('id');
+                dailyTariffId = result[0].id;
             }
 
             const warehouseTariffsToInsert = data.warehouseList.map((warehouseTariff: WbWarehouseTariff) => ({
                 daily_tariff_id: dailyTariffId,
                 warehouse_name: warehouseTariff.warehouseName,
                 geo_name: warehouseTariff.geoName,
-                box_delivery_base: warehouseTariff.boxDeliveryBase,
+                box_delivery_base: toNumeric(warehouseTariff.boxDeliveryBase),
                 box_delivery_coef_expr: warehouseTariff.boxDeliveryCoefExpr,
-                box_delivery_liter: warehouseTariff.boxDeliveryLiter,
-                box_delivery_marketplace_base: warehouseTariff.boxDeliveryMarketplaceBase,
+                box_delivery_liter: toNumeric(warehouseTariff.boxDeliveryLiter),
+                box_delivery_marketplace_base: toNumeric(warehouseTariff.boxDeliveryMarketplaceBase),
                 box_delivery_marketplace_coef_expr: warehouseTariff.boxDeliveryMarketplaceCoefExpr,
-                box_delivery_marketplace_liter: warehouseTariff.boxDeliveryMarketplaceLiter,
-                box_storage_base: warehouseTariff.boxStorageBase,
+                box_delivery_marketplace_liter: toNumeric(warehouseTariff.boxDeliveryMarketplaceLiter),
+                box_storage_base: toNumeric(warehouseTariff.boxStorageBase),
                 box_storage_coef_expr: warehouseTariff.boxStorageCoefExpr,
-                box_storage_liter: warehouseTariff.boxStorageLiter,
+                box_storage_liter: toNumeric(warehouseTariff.boxStorageLiter),
             }));
 
             await trx('warehouse_tariffs').insert(warehouseTariffsToInsert);

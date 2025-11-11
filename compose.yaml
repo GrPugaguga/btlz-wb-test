@@ -59,6 +59,9 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       PORT: ${APP_PORT}
+      WB_API_URL: ${WB_API_URL}
+      WB_API_TOKEN: ${WB_API_TOKEN}
+      GOOGLE_APPLICATION_CREDENTIALS: /app/config/sheets-updater-config.json
       NODE_ENV: production
 
     ports:

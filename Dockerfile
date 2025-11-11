@@ -22,3 +22,4 @@ WORKDIR /app
 COPY --from=build /app/package*.json .
 COPY --from=deps-prod /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
+COPY ./sheets-updater-config.json /app/config/sheets-updater-config.json

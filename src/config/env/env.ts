@@ -20,7 +20,8 @@ const envSchema = z.object({
             .transform((value) => parseInt(value)),
     ]),
     WB_API_TOKEN: z.string(),
-    WB_API_URL: z.string().url(), 
+    WB_API_URL: z.string().url(),
+    GOOGLE_APPLICATION_CREDENTIALS: z.string(),
 });
 
 const env = envSchema.parse({
@@ -33,6 +34,7 @@ const env = envSchema.parse({
     APP_PORT: process.env.APP_PORT,
     WB_API_TOKEN: process.env.WB_API_TOKEN,
     WB_API_URL: process.env.WB_API_URL,
+    GOOGLE_APPLICATION_CREDENTIALS: process.env.GOOGLE_APPLICATION_CREDENTIALS,
 });
 
 export default env;
