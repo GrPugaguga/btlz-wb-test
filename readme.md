@@ -1,54 +1,21 @@
-# Шаблон для выполнения тестового задания
+Выполнено тестовое задание https://docs.google.com/document/d/e/2PACX-1vTYfLgip1G1-GmLsU7T3RCmT52eoR1ZPOaSBkNWPCA0Db534AhNFm32lplolcTZGdHufBAjz_TrOrdZ/pub
 
-## Описание
-Шаблон подготовлен для того, чтобы попробовать сократить трудоемкость выполнения тестового задания.
+На выполнение в сумме ушло около 3 часов, весь стек остался с шаблона, был добавлен фастифай сервер для быстрого запуска задач вне планировщика и добавления новых таблиц
+http://localhost:5000/documentation
 
-В шаблоне настоены контейнеры для `postgres` и приложения на `nodejs`.  
-Для взаимодействия с БД используется `knex.js`.  
-В контейнере `app` используется `build` для приложения на `ts`, но можно использовать и `js`.
+Для планового выполнения задач была добавлена библиотека node cron
 
-Шаблон не является обязательным!\
-Можно использовать как есть или изменять на свой вкус.
+Сам проект разделил на три отдельных сервиса по задачам 
+ - database.service.ts
+ - google.service.ts
+ - wb.service.ts
 
-Все настройки можно найти в файлах:
-- compose.yaml
-- dockerfile
-- package.json
-- tsconfig.json
-- src/config/env/env.ts
-- src/config/knex/knexfile.ts
+В src\app.ts все обьеденино в один пайплайн 
 
-## Команды:
+Для тестирования оставил sheets-updater-config.json с доступом к таблице https://docs.google.com/spreadsheets/d/1E9FSbGB_fMY63OVZCfSaz5H0hXTGl5l-TH51cZNe9xI/edit?gid=0#gid=0
 
-Запуск базы данных:
-```bash
-docker compose up -d --build postgres
-```
+Для запуска проекта достаточно добавить в енв WB_API_TOKEN и запустить docker командой 
 
-Для выполнения миграций и сидов не из контейнера:
-```bash
-npm run knex:dev migrate latest
-```
+docker compose up -d --build
 
-```bash
-npm run knex:dev seed run
-```
-Также можно использовать и остальные команды (`migrate make <name>`,`migrate up`, `migrate down` и т.д.)
 
-Для запуска приложения в режиме разработки:
-```bash
-npm run dev
-```
-
-Запуск проверки самого приложения:
-```bash
-docker compose up -d --build app
-```
-
-Для финальной проверки рекомендую:
-```bash
-docker compose down --rmi local --volumes
-docker compose up --build
-```
-
-PS: С наилучшими пожеланиями!
