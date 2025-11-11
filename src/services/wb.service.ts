@@ -3,14 +3,8 @@ import type { AxiosInstance } from 'axios';
 import env from '#config/env/env.js';
 import { WbTariffsApiResponse } from '#common/types/wb.types.js';
 import { WbApiError } from '#common/errors/api.errors.js';
+import { formatDateToYYYYMMDD } from '#utils/date.format.js';
 
-
-function formatDateToYYYYMMDD(date: Date): string {
-    const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, '0'); 
-    const day = date.getDate().toString().padStart(2, '0');
-    return `${year}-${month}-${day}`;
-}
 
 class WbService {
     private apiUrl: string;
@@ -32,7 +26,6 @@ class WbService {
 
     public async fetchTariffs(date: Date = new Date()): Promise<WbTariffsApiResponse> {
         console.log(`Fetching WB tariffs for date: ${date} from: ${this.apiUrl}`);
-
 
         try {
             const response = await this.axiosInstance.get('', {
@@ -63,9 +56,3 @@ class WbService {
 
 export const wbService = new WbService();
 
-async function test(){
-     const wbService = new WbService();
-     await wbService.fetchTariffs()
-}
-
-test()
